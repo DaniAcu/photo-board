@@ -7,7 +7,7 @@ export const Frame = styled.div`
     cursor: pointer;
     padding: 1.5em 1.5em 4.5em 1.5em;
     position: absolute;
-    ${ ({ dragging }: IStyledProp) => !dragging ? 'transition: transform .3s ease;' : '' }
+    ${ ({ dragging }: IStyledProp) => !dragging ? 'transition: transform .3s ease;' : 'z-index: 1' }
 `;
 
 export const Photo = styled.div`
