@@ -1,24 +1,15 @@
 import * as React from 'react';
 import Draggable from 'react-draggable';
+import { IPhoto } from '../../typings';
 import { Frame, Photo } from './styled';
-import { IProps } from './typings';
 
-const getPositionRandom = () => {
-    const { clientHeight , clientWidth } = document.body;
-    const height = Math.floor((Math.random() * clientHeight));
-    const width = Math.floor((Math.random() * clientWidth));
-
-    return {
-        x: width,
-        y: height 
-    };
-};
-
-export const Card: React.SFC<IProps> = ({ image }: IProps) => (
+export const Card: React.SFC<IPhoto> = ({ dragging, id, onClick, onDrop , position, photo }: IPhoto) => (
     <Draggable
-        defaultPosition={getPositionRandom()}>
-        <Frame>
-            <Photo image={ image } />
+        position={ position }
+        onStart={ onClick(id) }
+        onStop={ onDrop(id) }>
+        <Frame dragging={ dragging }>
+            <Photo photo={ photo } />
         </Frame>
     </Draggable>
 )

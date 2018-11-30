@@ -1,4 +1,11 @@
-export interface IPhoto {
+import { Position } from '../utils';
+import { Photo } from './utils';
+
+export { HandleEvent } from '../typings';
+
+export type GetPositionRandom = (x: number, y:number) => Position;
+
+export interface IHits {
     id: number
     webformatURL: string
 }
@@ -8,9 +15,9 @@ export interface IResponse {
 }
 
 export interface IResponseData {
-    hits: IPhoto[]
+    hits: IHits[]
 }
 
 export interface IState {
-    photos: any[]
+    photos: Photo[]
 }

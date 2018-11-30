@@ -12,3 +12,5 @@ To run this project use this commands lines
 yarn install
 yarn start
 ```
+
+>Thanks to [Pixabay](https://pixabay.com/) because I used his API 

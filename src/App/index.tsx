@@ -1,10 +1,13 @@
-import axios from 'axios';
 import * as React from 'react';
-import { Card } from '../components/Card/';
+import { Card } from '../components/Card';
+import PixabayService from '../services/PixabayService/';
+import { Position } from '../utils'
 import { Container, GlobalStyles } from './styled';
-import { IPhoto, IResponse, IState } from './typings';
+import { GetPositionRandom, HandleEvent, IHits, IResponse, IState } from './typings';
+import { Photo } from './utils';
 
 class App extends React.Component<object, IState> {
+
   private constructor (props: object) {
     super(props);
     this.state = {
@@ -13,18 +16,44 @@ class App extends React.Component<object, IState> {
   }
 
   public componentWillMount () {
-    axios
-      .get("https://pixabay.com/api/?key=3934377-d716359e67249c9dff81e6de2&q=photography&image_type=photo")
-      .then(({ data: { hits: photos } }: IResponse) => {
-        this.setState({
-          photos
+    PixabayService(({ data: { hits } }: IResponse) => {
+        const photos: Photo[] = hits.map(({ id, webformatURL: photo }: IHits) => {
+          const { clientHeight: y , clientWidth:x } = document.body;  
+          return new Photo(false, id, this.handleClick, this.handleDrop, photo, this.getPositionRandom(x, y))
         });
+
+        this.setPhotos(photos);
       });
   }
+
+  public getPositionRandom: GetPositionRandom = (x, y) => {
+    const height: number = Math.floor((Math.random() * y));
+    const width: number = Math.floor((Math.random() * x));
+
+    return new Position(width, height);
+  };
   
-  public getData = (e: any) => {
-    // tslint:disable-next-line:no-console
-    console.log(e)
+  public handleClick: HandleEvent = (id: number) => {
+    return () => {
+      const { photos: oldPhotos } = this.state;
+
+      const photos = oldPhotos.map((item: Photo) => item.id !== id ? { ...item, position: this.getPositionRandom(160, 384) } : { ...item, dragging: true });
+      this.setPhotos(photos);
+    }
+  }
+
+  public handleDrop: HandleEvent = (id: number) => {
+    return () => {
+      const { photos: oldPhotos } = this.state;
+      const { clientHeight: y , clientWidth:x } = document.body;
+
+      const photos = oldPhotos.map((item: Photo) => item.id !== id ? { ...item, position: this.getPositionRandom(x, y) } : { ...item, dragging: false } )
+      this.setPhotos(photos);
+    }
+  }
+
+  public setPhotos(photos: Photo[]) {
+    this.setState({ photos });
   }
 
   public render() {
@@ -34,8 +63,8 @@ class App extends React.Component<object, IState> {
         <GlobalStyles/>
         <Container>
           {
-            state.photos.map(({ id, webformatURL: photo }: IPhoto) => (
-              <Card onDrag={this.getData} onDrop={this.getData} image={photo} key={id}/>
+            state.photos.map((props: Photo, index: number) => (
+              <Card {...props} key={ index }/>
             ))
           }
         </Container>
